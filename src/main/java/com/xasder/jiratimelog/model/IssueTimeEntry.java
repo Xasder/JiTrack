@@ -1,4 +1,4 @@
-package com.example.jiratimelog.model;
+package com.xasder.jiratimelog.model;
 
 public class IssueTimeEntry {
     private String issueKey;

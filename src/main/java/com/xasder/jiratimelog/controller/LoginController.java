@@ -1,6 +1,6 @@
-package com.example.jiratimelog.controller;
+package com.xasder.jiratimelog.controller;
 
-import com.example.jiratimelog.model.JiraCredentials;
+import com.xasder.jiratimelog.model.JiraCredentials;
 import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

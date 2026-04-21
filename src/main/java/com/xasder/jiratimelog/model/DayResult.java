@@ -1,4 +1,4 @@
-package com.example.jiratimelog.model;
+package com.xasder.jiratimelog.model;
 
 import java.time.LocalDate;
 import java.util.List;

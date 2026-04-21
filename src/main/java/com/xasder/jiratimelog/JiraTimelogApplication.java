@@ -1,4 +1,4 @@
-package com.example.jiratimelog;
+package com.xasder.jiratimelog;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

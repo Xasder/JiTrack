@@ -1,4 +1,4 @@
-package com.example.jiratimelog.model;
+package com.xasder.jiratimelog.model;
 
 /**
  * Simple holder for Jira connection credentials provided by the user).

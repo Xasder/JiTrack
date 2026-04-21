@@ -1,4 +1,4 @@
-package com.example.jiratimelog.config;
+package com.xasder.jiratimelog.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;

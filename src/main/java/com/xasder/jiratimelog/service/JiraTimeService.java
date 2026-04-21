@@ -1,8 +1,8 @@
-package com.example.jiratimelog.service;
+package com.xasder.jiratimelog.service;
 
-import com.example.jiratimelog.model.DayResult;
-import com.example.jiratimelog.model.IssueTimeEntry;
-import com.example.jiratimelog.model.JiraCredentials;
+import com.xasder.jiratimelog.model.DayResult;
+import com.xasder.jiratimelog.model.IssueTimeEntry;
+import com.xasder.jiratimelog.model.JiraCredentials;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
