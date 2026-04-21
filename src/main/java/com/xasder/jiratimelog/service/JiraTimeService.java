@@ -14,7 +14,9 @@ import org.springframework.web.client.RestTemplate;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -140,6 +142,9 @@ public class JiraTimeService {
             throw new IllegalArgumentException("Credentials with baseUrl required");
         }
 
+        long startedAfter = start.atTime(0, 0, 1).toInstant(ZoneOffset.UTC).toEpochMilli();
+        long startedBefore = end.atTime(23, 59, 59).toInstant(ZoneOffset.UTC).toEpochMilli();
+        
         logger.info("Base URL: {}, Email: {}", creds.getBaseUrl(), creds.getEmail());
 
         List<DayResult> results = new ArrayList<>();
@@ -186,7 +191,7 @@ public class JiraTimeService {
                     issueSummary = fields.containsKey("summary") ? (String) fields.get("summary") : "N/A";
                 }
                 
-                String wlUrl = baseUrl + "/rest/api/3/issue/" + issueKey + "/worklog";
+                String wlUrl = baseUrl + "/rest/api/3/issue/" + issueKey + "/worklog?startedAfter=" + startedAfter + "&startedBefore=" + startedBefore;
                 ResponseEntity<Map> wlRespEntity = restTemplate.exchange(wlUrl, HttpMethod.GET, entity, Map.class);
                 Map<String, Object> wlResp = wlRespEntity.getBody();
                 
