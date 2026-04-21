@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Jira Time Log - Login</title>
+    <meta charset="UTF-8" />
+    <style>
+        body { font-family: Arial, sans-serif; padding: 2rem; }
+        form { max-width: 500px; margin: auto; }
+        label { display: block; margin-top: 1rem; }
+        input { width: 100%; padding: 0.5rem; margin-top: 0.25rem; }
+        button { padding: 0.6rem 1rem; margin-top: 1rem; }
+        a { margin-left: 10px; font-size: 0.9em; }
+    </style>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        var errorMessage = /*[[${error}]]*/ null;
+        if (errorMessage) {
+            window.onload = function() {
+                alert(errorMessage);
+            };
+        }
+        /*]]>*/
+    </script>
+</head>
+<body>
+    <h2>Jira Time Log - Connect</h2>
+    <form action="/login" method="post">
+        <label>Base URL (e.g. https://your-domain.atlassian.net/)
+            <input type="text" name="baseUrl" placeholder="https://your-org-at-jira.atlassian.net/" required/>
+        </label>
+        <label>Email ( Atlassian account )
+            <input type="email" name="email" placeholder="you@example.com" required/>
+        </label>
+        <label>API Token
+            <input type="password" name="token" placeholder="API token" required/>
+            <a href="https://id.atlassian.com/manage-profile/security/api-tokens" target="_blank">Get personal JIRA API Token</a>
+        </label>
+        <button type="submit">Connect</button>
+    </form>
+</body>
+</html>

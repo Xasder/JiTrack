@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Jira Time Log - Date Filter</title>
+    <meta charset="UTF-8" />
+    <style>
+        body { font-family: Arial, sans-serif; padding: 2rem; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .user-info { color: #666; }
+        .logout-btn { padding: 8px 16px; background: #d9534f; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        .logout-btn:hover { background: #c9302c; }
+        form { display: inline-block; padding: 1rem; border: 1px solid #ccc; border-radius: 6px; }
+        label { display: block; margin-top: 0.8rem; }
+        input { padding: 0.4rem; }
+        button { padding: 0.6rem 1rem; margin-top: 0.6rem; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="user-info">
+            Logged in as: <span th:text="${session.jriCreds.email}"></span>
+        </div>
+        <form th:action="@{/logout}" method="post">
+            <button type="submit" class="logout-btn">Logout</button>
+        </form>
+    </div>
+    <h2>Time Log Lookup</h2>
+    <form action="/timelog/apply" method="post">
+        <label>Start date
+            <input type="date" name="startDate" required/>
+        </label>
+        <label>End date
+            <input type="date" name="endDate" required/>
+        </label>
+        <button type="submit">Apply</button>
+    </form>
+    <p>Note: This will fetch time logs per day for the given period.</p>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Jira Time Log - Results</title>
+    <meta charset="UTF-8" />
+    <style>
+        body { font-family: Arial, sans-serif; padding: 2rem; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .user-info { color: #666; }
+        .logout-btn { padding: 8px 16px; background: #d9534f; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        .logout-btn:hover { background: #c9302c; }
+        h2 { margin-bottom: 1rem; }
+        .summary { background: #f0f0f0; padding: 1rem; border-radius: 4px; margin-bottom: 1.5rem; font-size: 1.1em; }
+        .grass-msg { color: green; font-weight: bold; margin-top: 0.5rem; font-size: 1.2em; }
+        .day-section { margin-bottom: 2rem; border: 1px solid #ccc; padding: 1rem; border-radius: 6px; }
+        .day-header { font-weight: bold; font-size: 1.1em; margin-bottom: 0.5rem; }
+        table { border-collapse: collapse; width: 100%; max-width: 800px; margin-top: 0.5rem; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background: #f4f4f4; }
+        th.issue-key-col { width: 120px; }
+        th.issue-name-col { width: 300px; }
+        th.time-spent-col { width: 120px; }
+        th.comment-col { width: auto; }
+        td.issue-key-col { width: 120px; }
+        td.issue-name-col { width: 300px; }
+        td.time-spent-col { width: 120px; }
+        td.comment-col { width: auto; }
+        .total-row { font-weight: bold; background: #f9f9f9; }
+        .no-data { color: #666; font-style: italic; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="user-info">
+            Logged in as: <span th:text="${session.jriCreds.email}"></span>
+        </div>
+        <form th:action="@{/logout}" method="post">
+            <button type="submit" class="logout-btn">Logout</button>
+        </form>
+    </div>
+    <h2>Time Log Summary</h2>
+    <div class="summary">
+        <span th:text="'Time Log for ' + ${startDate} + ' to ' + ${endDate} + ' (' + ${numDays} + ' d). Total issues You have worked at ' + ${totalIssues} + ', with total time spent ' + ${#numbers.formatDecimal(totalHours, 1, 2)} + ' of expected time of ' + ${#numbers.formatDecimal(expectedHours, 1, 2)} + '.'"></span>
+        <div th:if="${goTouchGrass}" class="grass-msg">Go touch some grass!</div>
+    </div>
+    <div th:each="r : ${results}">
+        <div class="day-section">
+            <div class="day-header">
+                <span th:text="${r.date}"></span> - 
+                <span th:text="${#numbers.formatDecimal(r.totalSeconds / 3600.0, 1, 2)}"></span> hours
+            </div>
+            <table th:if="${not #lists.isEmpty(r.issues)}">
+                <thead>
+                    <tr>
+                        <th class="issue-key-col">Issue Key</th>
+                        <th class="issue-name-col">Issue Name</th>
+                        <th class="time-spent-col">Time Spent</th>
+                        <th class="comment-col">Comment</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="issue : ${r.issues}">
+                        <td class="issue-key-col">
+                            <a th:href="${session.jriCreds.baseUrl + '/browse/' + issue.issueKey}" 
+                               th:text="${issue.issueKey}" target="_blank"></a>
+                        </td>
+                        <td class="issue-name-col" th:text="${issue.summary}"></td>
+                        <td class="time-spent-col" th:text="${#numbers.formatDecimal(issue.seconds / 3600.0, 1, 2)} + ' h'"></td>
+                        <td class="comment-col" th:text="${issue.comment}"></td>
+                    </tr>
+                    <tr class="total-row">
+                        <td colspan="2">Total</td>
+                        <td class="time-spent-col" th:text="${#numbers.formatDecimal(r.totalSeconds / 3600.0, 1, 2)} + ' h of 8.00 h'"></td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+            <p th:if="${#lists.isEmpty(r.issues)}" class="no-data">No time entries for this date</p>
+        </div>
+    </div>
+    <p><a href="/timelog">Back to Date Filter</a></p>
+</body>
+</html>
