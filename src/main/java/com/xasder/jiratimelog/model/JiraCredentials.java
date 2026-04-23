@@ -1,8 +1,13 @@
 package com.xasder.jiratimelog.model;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * Simple holder for Jira connection credentials provided by the user).
  */
+@Setter
+@Getter
 public class JiraCredentials {
     private String baseUrl;
     private String email;
@@ -16,27 +21,4 @@ public class JiraCredentials {
         this.token = token;
     }
 
-    public String getBaseUrl() {
-        return baseUrl;
-    }
-
-    public void setBaseUrl(String baseUrl) {
-        this.baseUrl = baseUrl;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
 }

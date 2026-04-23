@@ -1,10 +1,15 @@
 package com.xasder.jiratimelog.model;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.LocalDate;
 
 /**
  * Represents time spent by the user on a specific date.
  */
+@Setter
+@Getter
 public class DateResult {
     private LocalDate date;
     private long seconds;
@@ -16,19 +21,4 @@ public class DateResult {
         this.seconds = seconds;
     }
 
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public void setDate(LocalDate date) {
-        this.date = date;
-    }
-
-    public long getSeconds() {
-        return seconds;
-    }
-
-    public void setSeconds(long seconds) {
-        this.seconds = seconds;
-    }
 }
