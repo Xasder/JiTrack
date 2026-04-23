@@ -1,8 +1,10 @@
 package com.xasder.jiratimelog.service;
 
+import com.xasder.jiratimelog.consts.ServiceStaticSettings;
 import com.xasder.jiratimelog.model.DayResult;
 import com.xasder.jiratimelog.model.IssueTimeEntry;
 import com.xasder.jiratimelog.model.JiraCredentials;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
@@ -19,9 +21,9 @@ import java.time.format.DateTimeFormatter;
 import java.time.LocalDateTime;
 import java.util.*;
 
+@Slf4j
 @Service
 public class JiraTimeService {
-    private static final Logger logger = LoggerFactory.getLogger(JiraTimeService.class);
     private static final DateTimeFormatter ISO_DATE = DateTimeFormatter.ISO_DATE;
 
     private RestTemplate createRestTemplate(String authHeader) {
@@ -34,9 +36,9 @@ public class JiraTimeService {
     }
 
     private void checkAuthenticationFailed(HttpHeaders headers) {
-        String loginReason = headers.getFirst("X-Seraph-Loginreason");
+        String loginReason = headers.getFirst(ServiceStaticSettings.X_SERAPH_LOGIN_REASON);
         if (loginReason != null && loginReason.equals("AUTHENTICATED_FAILED")) {
-            logger.error("JIRA authentication failed - X-Seraph-Loginreason: AUTHENTICATED_FAILED");
+            log.error("JIRA authentication failed - X-Seraph-Loginreason: AUTHENTICATED_FAILED");
         }
     }
 
@@ -112,7 +114,7 @@ public class JiraTimeService {
             }
             return sb.toString();
         } catch (Exception e) {
-            logger.warn("Failed to parse Atlassian doc format: {}", e.getMessage());
+            log.warn("Failed to parse Atlassian doc format: {}", e.getMessage());
             return "";
         }
     }
@@ -145,7 +147,7 @@ public class JiraTimeService {
         long startedAfter = start.atTime(0, 0, 1).toInstant(ZoneOffset.UTC).toEpochMilli();
         long startedBefore = end.atTime(23, 59, 59).toInstant(ZoneOffset.UTC).toEpochMilli();
         
-        logger.info("Base URL: {}, Email: {}", creds.getBaseUrl(), creds.getEmail());
+        log.info("Base URL: {}, Email: {}", creds.getBaseUrl(), creds.getEmail());
 
         List<DayResult> results = new ArrayList<>();
         Map<LocalDate, DayResult> dayResults = new LinkedHashMap<>();
@@ -163,9 +165,9 @@ public class JiraTimeService {
         for (LocalDate date = start; !date.isAfter(end); date = date.plusDays(1)) {
             String jql = "worklogDate = \"" + date.format(ISO_DATE) + "\" AND worklogAuthor = \"" + creds.getEmail() + "\"";
             String baseUrl = creds.getBaseUrl().replaceAll("/+$", "");
-            String url = baseUrl + "/rest/api/3/search/jql?jql=" + jql + "&fields=summary&maxResults=1000";
+            String url = baseUrl + ServiceStaticSettings.REST_API_3_MYSELF_WITH_ARGS + jql + "&fields=summary&maxResults=1000";
 
-            logger.info("Fetching issues for date: {}", date);
+            log.info("Fetching issues for date: {}", date);
 
             HttpHeaders headers = new HttpHeaders();
             HttpEntity<?> entity = new HttpEntity<>(headers);
@@ -174,12 +176,12 @@ public class JiraTimeService {
             checkAuthenticationFailed(resp.getHeaders());
             
             if (resp.getBody() == null || !resp.getBody().containsKey("issues")) {
-                logger.warn("No issues found for date: {}", date);
+                log.warn("No issues found for date: {}", date);
                 continue;
             }
             
             List<Map<String, Object>> issues = (List<Map<String, Object>>) resp.getBody().get("issues");
-            logger.info("Found {} issues for date {}", issues.size(), date);
+            log.info("Found {} issues for date {}", issues.size(), date);
 
             DayResult dayResult = dayResults.get(date);
 
@@ -223,7 +225,7 @@ public class JiraTimeService {
                             IssueTimeEntry entry = new IssueTimeEntry(issueKey, issueSummary, timeSpent, comment);
                             dayResult.getIssues().add(entry);
                             dayResult.setTotalSeconds(dayResult.getTotalSeconds() + timeSpent);
-                            logger.debug("Added {}s to {} - {}", timeSpent, issueKey, comment);
+                            log.debug("Added {}s to {} - {}", timeSpent, issueKey, comment);
                         }
                     }
                 }
@@ -234,7 +236,7 @@ public class JiraTimeService {
             results.add(e.getValue());
         }
         
-        logger.info("Final results: {}", results.stream().map(r -> r.getDate() + "=" + r.getTotalSeconds()).toList());
+        log.info("Final results: {}", results.stream().map(r -> r.getDate() + "=" + r.getTotalSeconds()).toList());
         return results;
     }
 }

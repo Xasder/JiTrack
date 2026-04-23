@@ -4,9 +4,8 @@ import com.xasder.jiratimelog.model.DayResult;
 import com.xasder.jiratimelog.model.JiraCredentials;
 import com.xasder.jiratimelog.service.JiraTimeService;
 import jakarta.servlet.http.HttpSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,16 +15,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.time.LocalDate;
 import java.util.List;
 
+@Slf4j
 @Controller
+@RequiredArgsConstructor
 public class TimeLogController {
 
-    private static final Logger logger = LoggerFactory.getLogger(TimeLogController.class);
-
-    @Autowired
-    private JiraTimeService jiraTimeService;
+    private final JiraTimeService jiraTimeService;
 
     @GetMapping("/timelog")
-    public String timelogPage(HttpSession session, Model model) {
+    public String timeLogPage(HttpSession session) {
         JiraCredentials creds = (JiraCredentials) session.getAttribute("jriCreds");
         if (creds == null) {
             return "redirect:/";
@@ -40,15 +38,15 @@ public class TimeLogController {
                         Model model) {
         JiraCredentials creds = (JiraCredentials) session.getAttribute("jriCreds");
         if (creds == null) {
-            logger.warn("No credentials in session, redirecting to login");
+            log.warn("No credentials in session, redirecting to login");
             return "redirect:/";
         }
-        logger.info("Fetching time logs from {} to {} for user {}", startDate, endDate, creds.getEmail());
+        log.info("Fetching time logs from {} to {} for user {}", startDate, endDate, creds.getEmail());
         LocalDate start = LocalDate.parse(startDate);
         LocalDate end = LocalDate.parse(endDate);
         try {
             List<DayResult> results = jiraTimeService.fetchTimeLogs(creds, start, end);
-            logger.info("Found {} results", results.size());
+            log.info("Found {} results", results.size());
             model.addAttribute("results", results);
             
             // Calculate summary data
@@ -73,7 +71,7 @@ public class TimeLogController {
             
             return "results";
         } catch (Exception e) {
-            logger.error("Error fetching time logs: {}", e.getMessage(), e);
+            log.error("Error fetching time logs: {}", e.getMessage(), e);
             model.addAttribute("error", e.getMessage());
             return "timelog";
         }
